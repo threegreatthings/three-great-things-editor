@@ -1,18 +1,20 @@
 import { useRef, useState } from "react";
-import type { NewsletterStory } from "../types/newsletter";
+import type { NewsletterImageFields } from "../types/newsletter";
 
 type ImagePickerProps = {
-  story: NewsletterStory;
+  story: NewsletterImageFields;
   disabled?: boolean;
-  onChange: (patch: Partial<NewsletterStory>) => void;
+  placeholderText?: string;
+  onChange: (patch: Partial<NewsletterImageFields>) => void;
 };
 
-function placeholderFor(story: NewsletterStory) {
-  const color = story.imageFallbackColor.replace("#", "") || "8A937E";
-  return `https://via.placeholder.com/600x200/${color}/ffffff?text=Story+Photo`;
+function placeholderFor(story: NewsletterImageFields, placeholderText: string) {
+  const color = (story.imageFallbackColor || "#8A937E").replace("#", "") || "8A937E";
+  const label = encodeURIComponent(placeholderText.trim()).replace(/%20/g, "+");
+  return `https://via.placeholder.com/600x200/${color}/ffffff?text=${label}`;
 }
 
-export function ImagePicker({ story, disabled = false, onChange }: ImagePickerProps) {
+export function ImagePicker({ story, disabled = false, placeholderText = "Story Photo", onChange }: ImagePickerProps) {
   const [open, setOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const previewSrc = story.localImagePreview || story.imageUrl;
@@ -35,14 +37,14 @@ export function ImagePicker({ story, disabled = false, onChange }: ImagePickerPr
       <button
         type="button"
         className="story-image-button"
-        style={{ backgroundColor: story.imageFallbackColor }}
+        style={{ backgroundColor: story.imageFallbackColor || "#8A937E" }}
         onClick={() => !disabled && setOpen((current) => !current)}
         aria-label="Edit story image"
       >
         {previewSrc ? (
           <img src={previewSrc} alt={story.imageAlt || "Story photo"} />
         ) : (
-          <span className="image-placeholder-text">Story photo</span>
+          <span className="image-placeholder-text">{placeholderText}</span>
         )}
         {!disabled && <span className="image-edit-pill">Image</span>}
         {hasLocalOnlyImage && <span className="image-host-warning">Needs hosted URL</span>}
@@ -78,7 +80,7 @@ export function ImagePicker({ story, disabled = false, onChange }: ImagePickerPr
             <button type="button" onClick={() => fileInputRef.current?.click()}>
               Upload
             </button>
-            <button type="button" onClick={() => onChange({ imageUrl: placeholderFor(story), localImagePreview: undefined })}>
+            <button type="button" onClick={() => onChange({ imageUrl: placeholderFor(story, placeholderText), localImagePreview: undefined })}>
               Reset
             </button>
             <button type="button" onClick={() => onChange({ imageUrl: "", localImagePreview: undefined })}>

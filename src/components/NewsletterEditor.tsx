@@ -103,9 +103,10 @@ export function NewsletterEditor() {
   const selectedExport = exportOutputs[selectedExportKey];
   const selectedBalance = validateEmailHtmlBalance(selectedExport.html);
 
-  const imageWarnings = newsletter.stories
-    .map((story, index) => (story.localImagePreview && !story.imageUrl ? `Story ${index + 1}` : ""))
-    .filter(Boolean);
+  const imageWarnings = [
+    ...newsletter.stories.map((story, index) => (story.localImagePreview && !story.imageUrl ? `Story ${index + 1}` : "")),
+    newsletter.deeperDive.localImagePreview && !newsletter.deeperDive.imageUrl ? "Deeper Dive" : "",
+  ].filter(Boolean);
 
   useEffect(() => {
     setStatus("Saving...");
@@ -198,7 +199,8 @@ export function NewsletterEditor() {
 
       {imageWarnings.length > 0 && (
         <div className="export-warning">
-          {imageWarnings.join(", ")} uses an uploaded local preview. Add a hosted image URL before exporting for reliable email images.
+          {imageWarnings.join(", ")} {imageWarnings.length === 1 ? "uses" : "use"} an uploaded local preview. Add a hosted image URL
+          before exporting for reliable email images.
         </div>
       )}
 
@@ -216,6 +218,9 @@ export function NewsletterEditor() {
           <aside className="export-panel" aria-label="Exported HTML">
             <div className="export-panel-header">
               <strong>Exported HTML</strong>
+              <button type="button" className="export-close-button" onClick={() => setHasExported(false)}>
+                Close
+              </button>
             </div>
 
             <div className="export-tabs" role="tablist" aria-label="Export outputs">

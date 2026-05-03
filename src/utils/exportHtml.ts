@@ -1,5 +1,5 @@
 import { DEFAULT_NEWSLETTER } from "../types/newsletter";
-import type { NewsletterState, NewsletterStory } from "../types/newsletter";
+import type { NewsletterImageFields, NewsletterState, NewsletterStory } from "../types/newsletter";
 import {
   escapeAttribute,
   escapeHtml,
@@ -28,9 +28,10 @@ function attr(value: string) {
   return escapeAttribute(value.trim());
 }
 
-function placeholderImageFor(story: NewsletterStory) {
-  const color = story.imageFallbackColor.replace("#", "") || "8A937E";
-  return `https://via.placeholder.com/600x200/${color}/ffffff?text=Story+Photo`;
+function placeholderImageFor(image: NewsletterImageFields, placeholderText = "Story Photo") {
+  const color = (image.imageFallbackColor || "#8A937E").replace("#", "") || "8A937E";
+  const label = encodeURIComponent(placeholderText.trim()).replace(/%20/g, "+");
+  return `https://via.placeholder.com/600x200/${color}/ffffff?text=${label}`;
 }
 
 function renderSpacer(height: number) {
@@ -180,8 +181,16 @@ function renderDivider(sectionId: "deeper_dive_divider" | "note_from_3gt_divider
 }
 
 function renderCategoryArticle(newsletter: NewsletterState) {
+  const imageSrc = safeHostedImageUrl(newsletter.deeperDive.imageUrl || "", placeholderImageFor(newsletter.deeperDive, "Deeper Dive Photo"));
+  const linkUrl = safeUrl(newsletter.deeperDive.linkUrl, "https://threegreatthings.com");
+
   return `<!-- section: category_article -->
-<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#ffffff;border-radius:12px;border:1px solid rgba(62,73,50,0.12);border-left:3px solid #8A937E;">
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#ffffff;border-radius:12px;border:1px solid rgba(62,73,50,0.12);overflow:hidden;">
+  <tr>
+    <td class="story-image" style="height:200px;background-color:${attr(newsletter.deeperDive.imageFallbackColor || "#8A937E")};text-align:center;vertical-align:middle;">
+      <img src="${attr(imageSrc)}" width="600" alt="${attr(newsletter.deeperDive.imageAlt || "Deeper Dive photo")}" style="display:block;width:100%;height:200px;object-fit:cover;max-width:600px;">
+    </td>
+  </tr>
   <tr>
     <td class="content-padding" style="padding:24px 28px;">
       <p style="margin:0 0 14px;font-family:Georgia,serif;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:#8A937E;">${text(newsletter.deeperDive.categoryLabel)}</p>
@@ -191,7 +200,7 @@ function renderCategoryArticle(newsletter: NewsletterState) {
       <p style="margin:0 0 16px;font-family:Georgia,serif;font-size:13.5px;line-height:1.75;color:#4D3B31;">
         ${rich(newsletter.deeperDive.bodyHtml)}
       </p>
-      <a href="${attr(safeUrl(newsletter.deeperDive.linkUrl, "https://threegreatthings.com"))}" style="font-family:Georgia,serif;font-size:13px;color:#8A937E;text-decoration:none;font-weight:600;letter-spacing:0.3px;">${text(newsletter.deeperDive.linkText)}</a>
+      <a href="${attr(linkUrl)}" style="font-family:Georgia,serif;font-size:13px;color:#8A937E;text-decoration:none;font-weight:600;letter-spacing:0.3px;">${text(newsletter.deeperDive.linkText)}</a>
     </td>
   </tr>
 </table>`;

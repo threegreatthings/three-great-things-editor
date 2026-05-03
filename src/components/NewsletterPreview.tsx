@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import type { NewsletterState, NewsletterStory } from "../types/newsletter";
+import type { NewsletterImageFields, NewsletterState, NewsletterStory } from "../types/newsletter";
 import { cloneNewsletterState } from "../utils/exportHtml";
 import { safeUrl } from "../utils/sanitize";
 import { EditableRichText } from "./EditableRichText";
@@ -175,6 +175,12 @@ export const NewsletterPreview = memo(function NewsletterPreview({
     });
   }
 
+  function updateDeeperDiveImage(patch: Partial<NewsletterImageFields>) {
+    update((draft) => {
+      draft.deeperDive = { ...draft.deeperDive, ...patch };
+    });
+  }
+
   return (
     <div className={`newsletter-artboard ${editMode ? "is-editing" : "is-previewing"}`}>
       <div className="email-container-preview">
@@ -258,44 +264,52 @@ export const NewsletterPreview = memo(function NewsletterPreview({
           <Spacer size={20} />
 
           <section className="deeper-dive-card">
-            <EditableRichText
-              as="p"
-              html={newsletter.deeperDive.categoryLabel}
-              className="deeper-category"
-              plainText
-              singleLine
+            <ImagePicker
+              story={newsletter.deeperDive}
               disabled={!editMode}
-              aria-label="Deeper Dive category"
-              onChange={(categoryLabel) => update((draft) => void (draft.deeperDive.categoryLabel = categoryLabel))}
-              onFocusField={onFocusField}
+              placeholderText="Deeper Dive Photo"
+              onChange={updateDeeperDiveImage}
             />
-            <EditableRichText
-              as="h2"
-              html={newsletter.deeperDive.headlineHtml}
-              className="deeper-headline"
-              disabled={!editMode}
-              aria-label="Deeper Dive headline"
-              onChange={(headlineHtml) => update((draft) => void (draft.deeperDive.headlineHtml = headlineHtml))}
-              onFocusField={onFocusField}
-            />
-            <EditableRichText
-              as="p"
-              html={newsletter.deeperDive.bodyHtml}
-              className="story-body"
-              disabled={!editMode}
-              aria-label="Deeper Dive body"
-              onChange={(bodyHtml) => update((draft) => void (draft.deeperDive.bodyHtml = bodyHtml))}
-              onFocusField={onFocusField}
-            />
-            <LinkControl
-              text={newsletter.deeperDive.linkText}
-              url={newsletter.deeperDive.linkUrl}
-              label="Deeper Dive link"
-              editMode={editMode}
-              onTextChange={(linkText) => update((draft) => void (draft.deeperDive.linkText = linkText))}
-              onUrlChange={(linkUrl) => update((draft) => void (draft.deeperDive.linkUrl = linkUrl))}
-              onFocusField={onFocusField}
-            />
+            <div className="deeper-dive-content">
+              <EditableRichText
+                as="p"
+                html={newsletter.deeperDive.categoryLabel}
+                className="deeper-category"
+                plainText
+                singleLine
+                disabled={!editMode}
+                aria-label="Deeper Dive category"
+                onChange={(categoryLabel) => update((draft) => void (draft.deeperDive.categoryLabel = categoryLabel))}
+                onFocusField={onFocusField}
+              />
+              <EditableRichText
+                as="h2"
+                html={newsletter.deeperDive.headlineHtml}
+                className="deeper-headline"
+                disabled={!editMode}
+                aria-label="Deeper Dive headline"
+                onChange={(headlineHtml) => update((draft) => void (draft.deeperDive.headlineHtml = headlineHtml))}
+                onFocusField={onFocusField}
+              />
+              <EditableRichText
+                as="p"
+                html={newsletter.deeperDive.bodyHtml}
+                className="story-body"
+                disabled={!editMode}
+                aria-label="Deeper Dive body"
+                onChange={(bodyHtml) => update((draft) => void (draft.deeperDive.bodyHtml = bodyHtml))}
+                onFocusField={onFocusField}
+              />
+              <LinkControl
+                text={newsletter.deeperDive.linkText}
+                url={newsletter.deeperDive.linkUrl}
+                label="Deeper Dive link"
+                editMode={editMode}
+                onTextChange={(linkText) => update((draft) => void (draft.deeperDive.linkText = linkText))}
+                onUrlChange={(linkUrl) => update((draft) => void (draft.deeperDive.linkUrl = linkUrl))}
+                onFocusField={onFocusField}
+              />
+            </div>
           </section>
 
           <Spacer size={28} />

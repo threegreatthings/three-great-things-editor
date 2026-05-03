@@ -477,7 +477,10 @@ textarea:focus {
 }
 
 .deeper-dive-card {
-  border-left: 3px solid #8a937e;
+  overflow: visible;
+}
+
+.deeper-dive-content {
   padding: 24px 28px;
 }
 
@@ -634,6 +637,12 @@ textarea:focus {
   font-size: 14px;
 }
 
+.export-close-button {
+  padding: 6px 9px;
+  color: #4d3b31;
+  font-size: 12px;
+}
+
 .export-tabs {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -776,13 +785,13 @@ textarea:focus {
   }
 
   .intro-card,
-  .deeper-dive-card,
   .closing-card {
     padding-left: 22px;
     padding-right: 22px;
   }
 
-  .story-content {
+  .story-content,
+  .deeper-dive-content {
     padding-left: 22px;
     padding-right: 22px;
   }

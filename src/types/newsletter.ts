@@ -4,11 +4,14 @@ export type NewsletterHeader = {
   subtitle: string;
 };
 
-export type NewsletterStory = {
+export type NewsletterImageFields = {
   imageUrl: string;
   localImagePreview?: string;
   imageAlt: string;
   imageFallbackColor: string;
+};
+
+export type NewsletterStory = NewsletterImageFields & {
   category: string;
   headlineHtml: string;
   bodyHtml: string;
@@ -23,6 +26,10 @@ export type NewsletterState = {
   };
   stories: NewsletterStory[];
   deeperDive: {
+    imageUrl: string;
+    localImagePreview?: string;
+    imageAlt: string;
+    imageFallbackColor: string;
     dividerLabel: string;
     categoryLabel: string;
     headlineHtml: string;
@@ -90,6 +97,9 @@ export const DEFAULT_NEWSLETTER: NewsletterState = {
     },
   ],
   deeperDive: {
+    imageUrl: "https://via.placeholder.com/600x200/8A937E/ffffff?text=Deeper+Dive+Photo",
+    imageAlt: "Deeper Dive photo",
+    imageFallbackColor: "#8A937E",
     dividerLabel: "Deeper Dive",
     categoryLabel: "This Week in Technology",
     headlineHtml: "The quiet revolution: how small AI tools are transforming rural healthcare access",
