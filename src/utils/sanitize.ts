@@ -11,6 +11,8 @@ const FONT_SIZE_BY_LEGACY_VALUE: Record<string, string> = {
   "7": "26px",
 };
 
+const INLINE_LINK_STYLE = "color:#8A937E;text-decoration:underline;";
+
 export function escapeHtml(value: string) {
   return value
     .replace(/&/g, "&amp;")
@@ -53,6 +55,31 @@ export function safeUrl(value: string | undefined, fallback = "#") {
   }
 
   return fallback;
+}
+
+export function normalizeBodyLinkUrl(value: string | undefined) {
+  const trimmed = (value ?? "").trim();
+
+  if (!trimmed) {
+    return "";
+  }
+
+  if (trimmed.startsWith("#")) {
+    return trimmed;
+  }
+
+  const candidate = /^[a-z][a-z0-9+.-]*:/i.test(trimmed) ? trimmed : `https://${trimmed}`;
+
+  try {
+    const parsed = new URL(candidate);
+    if (["http:", "https:", "mailto:", "tel:"].includes(parsed.protocol)) {
+      return candidate;
+    }
+  } catch {
+    return "";
+  }
+
+  return "";
 }
 
 export function safeHostedImageUrl(value: string | undefined, fallback: string) {
@@ -129,10 +156,29 @@ function cleanNode(node: Node): Node | null {
     return fragment;
   }
 
+  if (tag === "A") {
+    const href = normalizeBodyLinkUrl(element.getAttribute("href") ?? "");
+    if (!href) {
+      const fragment = document.createDocumentFragment();
+      Array.from(element.childNodes).forEach((child) => {
+        const cleaned = cleanNode(child);
+        if (cleaned) {
+          fragment.appendChild(cleaned);
+        }
+      });
+      return fragment;
+    }
+  }
+
   const cleanedElement = document.createElement(tag.toLowerCase());
 
   if (tag === "A") {
-    cleanedElement.setAttribute("href", safeUrl(element.getAttribute("href") ?? "", "#"));
+    cleanedElement.setAttribute("href", normalizeBodyLinkUrl(element.getAttribute("href") ?? ""));
+    cleanedElement.setAttribute("style", INLINE_LINK_STYLE);
+    if (element.getAttribute("target") === "_blank") {
+      cleanedElement.setAttribute("target", "_blank");
+      cleanedElement.setAttribute("rel", "noopener noreferrer");
+    }
   }
 
   if (tag === "SPAN") {

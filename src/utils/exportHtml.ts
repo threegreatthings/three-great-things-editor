@@ -144,6 +144,9 @@ function renderStoryCard(story: NewsletterStory, index: number) {
     </td>
   </tr>
   <tr>
+    <td aria-hidden="true" style="height:6px;line-height:6px;font-size:0;background-color:${attr(story.imageFallbackColor)};mso-line-height-rule:exactly;">&nbsp;</td>
+  </tr>
+  <tr>
     <td class="content-padding" style="padding:22px 24px;">
       <table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr>
         <td style="background-color:#3E4932;border-radius:20px;padding:5px 12px;">

@@ -112,6 +112,7 @@ function StoryCard({
   return (
     <article className="story-card">
       <ImagePicker story={story} disabled={!editMode} onChange={onChange} />
+      <div className="story-color-band" style={{ backgroundColor: story.imageFallbackColor }} aria-hidden="true" />
       <div className="story-content">
         <div className="tag-pill">
           <EditableRichText
